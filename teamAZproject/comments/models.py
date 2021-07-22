@@ -13,5 +13,3 @@ class Reply(models.Model):
     reply_to_comment = models.CharField(max_length=100)
     comment = models.ForeignKey('comments.Comment', null=True, blank=True, on_delete=models.PROTECT)
 
-    def __str__(self):
-        return self.comment

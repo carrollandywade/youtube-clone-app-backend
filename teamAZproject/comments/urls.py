@@ -7,5 +7,5 @@ urlpatterns = [
     path('comments/', views.CommentList.as_view()),
     path('comments/<int:pk>/', views.CommentDetail, name='comment'),
     path('replies/', views.ReplyList.as_view()),
-    path('replies/<int:pk>/', views.CommentDetail, name='comment')
+    path('replies/<int:pk>/', views.ReplyDetail, name='replies')
 ]

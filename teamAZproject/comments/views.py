@@ -8,7 +8,7 @@ from rest_framework import status
 
 class CommentList(APIView):
     def get(self, request):
-        comment = Comment.object.all()
+        comment = Comment.objects.all()
         serializer = CommentSerializer(comment, many=True)
         return Response(serializer.data)
 
@@ -43,11 +43,11 @@ class CommentDetail(APIView):
 
 class ReplyList(APIView):
     def get(self, request):
-        reply = Comment.object.all()
-        serializer = CommentSerializer(reply, many=True)
+        reply = Reply.objects.all()
+        serializer = ReplySerializer(reply, many=True)
         return Response(serializer.data)
 
-    def post(self,request):
+    def post(self, request):
         serializer = ReplySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -59,7 +59,7 @@ class ReplyDetail(APIView):
     def get_by_id(self, pk):
         try:
             return Reply.objects.get(pk=pk)
-        except Comment.DoesNotExist:
+        except Reply.DoesNotExist:
             raise Http404
 
     def get(self, request, fk):
@@ -68,8 +68,8 @@ class ReplyDetail(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
-        reply = self.get_object(pk)
-        serializer = CommentSerializer(reply, data=request.data)
+        reply = self.get_objects(pk)
+        serializer = ReplySerializer(reply, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
