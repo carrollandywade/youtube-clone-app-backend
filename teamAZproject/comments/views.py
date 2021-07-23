@@ -21,15 +21,15 @@ class CommentList(APIView):
 
 
 class CommentDetail(APIView):
-    def get_by_id(self, pk):
+    def get_object(self, pk):
         try:
             return Comment.objects.get(pk=pk)
         except Comment.DoesNotExist:
             raise Http404
 
     def get(self, request, pk):
-        comment_id = self.get_by_id(pk)
-        serializer = CommentSerializer(comment_id)
+        comment = self.get_object(pk)
+        serializer = CommentSerializer(comment)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
@@ -67,10 +67,45 @@ class ReplyDetail(APIView):
         serializer = ReplySerializer(comment_id)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, pk):
-        reply = self.get_objects(pk)
+    def post(self, request, pk):
+        reply = self.get_by_id(pk)
         serializer = ReplySerializer(reply, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LikeDetail(APIView):
+
+    def get_object(self, pk):
+        try:
+            return Comment.objects.get(pk=pk)
+        except Comment.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):
+        comment = self.get_object(pk)
+        comment.like_video += 1
+        comment.save()
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class DislikeDetail(APIView):
+
+    def get_object(self, pk):
+        try:
+            return Comment.objects.get(pk=pk)
+        except Comment.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):
+        comment = self.get_object(pk)
+        comment.dislike_video += 1
+        comment.save()
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
