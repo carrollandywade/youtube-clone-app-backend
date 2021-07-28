@@ -20,6 +20,32 @@ class CommentList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CommentDetail(APIView):
+    def get_Comment(self, videoId):
+        try:
+            return Comment.objects.get(videoId=videoId)
+        except Comment.DoesNotExist:
+            raise Http404
+
+    def get(self, request, videoId):
+        comment = self.get_Comment(videoId)
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data)
+
+    def put(self, request, videoId):
+        comment = self.get_Comment(videoId)
+        serializer = CommentSerializer(comment, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, videoId):
+        comment = self.get_Comment(videoId)
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class Like(APIView):
     def get_comment(self, comment_id):
         try:
